@@ -3051,7 +3051,7 @@ func (g *GoCloak) GetOrganizationGroupByPath(ctx context.Context, token, realm, 
 
 	resp, err := g.GetRequestWithBearerAuth(ctx, token).
 		SetResult(&result).
-		Get(g.getAdminRealmURL(realm, "organizations", organizationID, "group-by-path", groupPath))
+		Get(g.getAdminRealmURL(realm, "organizations", organizationID, "groups", "group-by-path", groupPath))
 
 	if err := checkForError(resp, err, errMessage); err != nil {
 		return nil, err
