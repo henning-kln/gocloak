@@ -2931,7 +2931,7 @@ func (g *GoCloak) AddIdentityProviderToOrganization(ctx context.Context, token, 
 }
 
 // Adds a group to an organization
-// GetGroup get group with id in realm
+// GetOrganizationGroup get group with id in realm
 func (g *GoCloak) GetOrganizationGroup(ctx context.Context, token, realm, organizationID, groupID string) (*Group, error) {
 	const errMessage = "could not get group"
 
@@ -2970,7 +2970,80 @@ func (g *GoCloak) GetOrganizationChildGroups(ctx context.Context, token, realm, 
 	return result, nil
 }
 
-// GetGroupByPath get group with path in realm
+// CreateOrganizationGroup create a new group
+func (g *GoCloak) CreateOrganizationGroup(ctx context.Context, token, realm, organizationID string, group Group) (string, error) {
+	const errMessage = "could not create group"
+
+	resp, err := g.GetRequestWithBearerAuth(ctx, token).
+		SetBody(group).
+		Post(g.getAdminRealmURL(realm, "organization", organizationID, "groups"))
+
+	if err := checkForError(resp, err, errMessage); err != nil {
+		return "", err
+	}
+	return getID(resp), nil
+}
+
+// CreateOrganizationChildGroup creates a new child group
+func (g *GoCloak) CreateOrganizationChildGroup(ctx context.Context, token, realm, organizationID, groupID string, group Group) (string, error) {
+	const errMessage = "could not create child group"
+
+	resp, err := g.GetRequestWithBearerAuth(ctx, token).
+		SetBody(group).
+		Post(g.getAdminRealmURL(realm, "organization", organizationID, "groups", groupID, "children"))
+
+	if err := checkForError(resp, err, errMessage); err != nil {
+		return "", err
+	}
+
+	return getID(resp), nil
+}
+
+// DeleteUserFromOrganizationGroup deletes given user from given group
+func (g *GoCloak) DeleteUserFromOrganizationGroup(ctx context.Context, token, realm, userID, organizationID, groupID string) error {
+	const errMessage = "could not delete user from group"
+
+	resp, err := g.GetRequestWithBearerAuth(ctx, token).
+		Delete(g.getAdminRealmURL(realm, "organization", organizationID, "groups", groupID, "members", userID))
+
+	return checkForError(resp, err, errMessage)
+}
+
+// AddUserToOrganizationGroup puts given user to given group
+func (g *GoCloak) AddUserToOrganizationGroup(ctx context.Context, token, realm, userID, organizationID, groupID string) error {
+	const errMessage = "could not add user to group"
+
+	resp, err := g.GetRequestWithBearerAuth(ctx, token).
+		Put(g.getAdminRealmURL(realm, "organization", organizationID, "groups", groupID, "members", userID))
+
+	return checkForError(resp, err, errMessage)
+}
+
+// DeleteOrganizationGroup deletes the group with the given groupID.
+func (g *GoCloak) DeleteOrganizationGroup(ctx context.Context, token, realm, organizationID, groupID string) error {
+	const errMessage = "could not delete group"
+
+	resp, err := g.GetRequestWithBearerAuth(ctx, token).
+		Delete(g.getAdminRealmURL(realm, "organization", organizationID, "groups", groupID))
+
+	return checkForError(resp, err, errMessage)
+}
+
+// UpdateOrganizationGroup updates the given group.
+func (g *GoCloak) UpdateOrganizationGroup(ctx context.Context, token, realm, organizationID string, updatedGroup Group) error {
+	const errMessage = "could not update group"
+
+	if NilOrEmpty(updatedGroup.ID) {
+		return errors.Wrap(errors.New("ID of a group required"), errMessage)
+	}
+	resp, err := g.GetRequestWithBearerAuth(ctx, token).
+		SetBody(updatedGroup).
+		Put(g.getAdminRealmURL(realm, "organizations", organizationID, "groups", PString(updatedGroup.ID)))
+
+	return checkForError(resp, err, errMessage)
+}
+
+// GetOrganizationGroupByPath get group with path in realm
 func (g *GoCloak) GetOrganizationGroupByPath(ctx context.Context, token, realm, organizationID, groupPath string) (*Group, error) {
 	const errMessage = "could not get group"
 
@@ -2987,7 +3060,7 @@ func (g *GoCloak) GetOrganizationGroupByPath(ctx context.Context, token, realm, 
 	return &result, nil
 }
 
-// GetGroups get all groups in realm
+// GetOrganizationGroups get all groups in realm
 func (g *GoCloak) GetOrganizationGroups(ctx context.Context, token, realm, organizationID string, params GetGroupsParams) ([]*Group, error) {
 	const errMessage = "could not get groups"
 
@@ -3009,7 +3082,7 @@ func (g *GoCloak) GetOrganizationGroups(ctx context.Context, token, realm, organ
 	return result, nil
 }
 
-// GetGroupMembers get a list of users of group with id in realm
+// GetOrganizationGroupMembers get a list of users of group with id in realm
 func (g *GoCloak) GetOrganizationGroupMembers(ctx context.Context, token, realm, organizationID, groupID string, params GetGroupsParams) ([]*User, error) {
 	const errMessage = "could not get group members"
 
