@@ -2751,7 +2751,7 @@ func (g *GoCloak) DeleteOrganization(ctx context.Context, token, realm, idOfOrga
 	const errMessage = "could not delete organization"
 
 	resp, err := g.GetRequestWithBearerAuth(ctx, token).
-		Delete(g.getAdminRealmURL(realm, "organization", idOfOrganization))
+		Delete(g.getAdminRealmURL(realm, "organizations", idOfOrganization))
 
 	return checkForError(resp, err, errMessage)
 }
@@ -2939,7 +2939,7 @@ func (g *GoCloak) GetOrganizationGroup(ctx context.Context, token, realm, organi
 
 	resp, err := g.GetRequestWithBearerAuth(ctx, token).
 		SetResult(&result).
-		Get(g.getAdminRealmURL(realm, "organization", organizationID, "groups", groupID))
+		Get(g.getAdminRealmURL(realm, "organizations", organizationID, "groups", groupID))
 
 	if err := checkForError(resp, err, errMessage); err != nil {
 		return nil, err
@@ -2961,7 +2961,7 @@ func (g *GoCloak) GetOrganizationChildGroups(ctx context.Context, token, realm, 
 	resp, err := g.GetRequestWithBearerAuth(ctx, token).
 		SetResult(&result).
 		SetQueryParams(queryParams).
-		Get(g.getAdminRealmURL(realm, "organization", organizationID, "groups", groupID, "children"))
+		Get(g.getAdminRealmURL(realm, "organizations", organizationID, "groups", groupID, "children"))
 
 	if err := checkForError(resp, err, errMessage); err != nil {
 		return nil, err
@@ -2976,7 +2976,7 @@ func (g *GoCloak) CreateOrganizationGroup(ctx context.Context, token, realm, org
 
 	resp, err := g.GetRequestWithBearerAuth(ctx, token).
 		SetBody(group).
-		Post(g.getAdminRealmURL(realm, "organization", organizationID, "groups"))
+		Post(g.getAdminRealmURL(realm, "organizations", organizationID, "groups"))
 
 	if err := checkForError(resp, err, errMessage); err != nil {
 		return "", err
@@ -2990,7 +2990,7 @@ func (g *GoCloak) CreateOrganizationChildGroup(ctx context.Context, token, realm
 
 	resp, err := g.GetRequestWithBearerAuth(ctx, token).
 		SetBody(group).
-		Post(g.getAdminRealmURL(realm, "organization", organizationID, "groups", groupID, "children"))
+		Post(g.getAdminRealmURL(realm, "organizations", organizationID, "groups", groupID, "children"))
 
 	if err := checkForError(resp, err, errMessage); err != nil {
 		return "", err
@@ -3004,7 +3004,7 @@ func (g *GoCloak) DeleteUserFromOrganizationGroup(ctx context.Context, token, re
 	const errMessage = "could not delete user from group"
 
 	resp, err := g.GetRequestWithBearerAuth(ctx, token).
-		Delete(g.getAdminRealmURL(realm, "organization", organizationID, "groups", groupID, "members", userID))
+		Delete(g.getAdminRealmURL(realm, "organizations", organizationID, "groups", groupID, "members", userID))
 
 	return checkForError(resp, err, errMessage)
 }
@@ -3014,7 +3014,7 @@ func (g *GoCloak) AddUserToOrganizationGroup(ctx context.Context, token, realm, 
 	const errMessage = "could not add user to group"
 
 	resp, err := g.GetRequestWithBearerAuth(ctx, token).
-		Put(g.getAdminRealmURL(realm, "organization", organizationID, "groups", groupID, "members", userID))
+		Put(g.getAdminRealmURL(realm, "organizations", organizationID, "groups", groupID, "members", userID))
 
 	return checkForError(resp, err, errMessage)
 }
@@ -3024,7 +3024,7 @@ func (g *GoCloak) DeleteOrganizationGroup(ctx context.Context, token, realm, org
 	const errMessage = "could not delete group"
 
 	resp, err := g.GetRequestWithBearerAuth(ctx, token).
-		Delete(g.getAdminRealmURL(realm, "organization", organizationID, "groups", groupID))
+		Delete(g.getAdminRealmURL(realm, "organizations", organizationID, "groups", groupID))
 
 	return checkForError(resp, err, errMessage)
 }
@@ -3051,7 +3051,7 @@ func (g *GoCloak) GetOrganizationGroupByPath(ctx context.Context, token, realm, 
 
 	resp, err := g.GetRequestWithBearerAuth(ctx, token).
 		SetResult(&result).
-		Get(g.getAdminRealmURL(realm, "organization", organizationID, "group-by-path", groupPath))
+		Get(g.getAdminRealmURL(realm, "organizations", organizationID, "group-by-path", groupPath))
 
 	if err := checkForError(resp, err, errMessage); err != nil {
 		return nil, err
@@ -3073,7 +3073,7 @@ func (g *GoCloak) GetOrganizationGroups(ctx context.Context, token, realm, organ
 	resp, err := g.GetRequestWithBearerAuth(ctx, token).
 		SetResult(&result).
 		SetQueryParams(queryParams).
-		Get(g.getAdminRealmURL(realm, "organization", organizationID, "groups"))
+		Get(g.getAdminRealmURL(realm, "organizations", organizationID, "groups"))
 
 	if err := checkForError(resp, err, errMessage); err != nil {
 		return nil, err
@@ -3095,7 +3095,7 @@ func (g *GoCloak) GetOrganizationGroupMembers(ctx context.Context, token, realm,
 	resp, err := g.GetRequestWithBearerAuth(ctx, token).
 		SetResult(&result).
 		SetQueryParams(queryParams).
-		Get(g.getAdminRealmURL(realm, "organization", organizationID, "groups", groupID, "members"))
+		Get(g.getAdminRealmURL(realm, "organizations", organizationID, "groups", groupID, "members"))
 
 	if err := checkForError(resp, err, errMessage); err != nil {
 		return nil, err
