@@ -2930,6 +2930,107 @@ func (g *GoCloak) AddIdentityProviderToOrganization(ctx context.Context, token, 
 	return checkForError(resp, err, errMessage)
 }
 
+// Adds a group to an organization
+// GetGroup get group with id in realm
+func (g *GoCloak) GetOrganizationGroup(ctx context.Context, token, realm, organizationID, groupID string) (*Group, error) {
+	const errMessage = "could not get group"
+
+	var result Group
+
+	resp, err := g.GetRequestWithBearerAuth(ctx, token).
+		SetResult(&result).
+		Get(g.getAdminRealmURL(realm, "organization", organizationID, "groups", groupID))
+
+	if err := checkForError(resp, err, errMessage); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+// GetChildGroups get child groups of group with id in realm
+func (g *GoCloak) GetOrganizationChildGroups(ctx context.Context, token, realm, organizationID, groupID string, params GetChildGroupsParams) ([]*Group, error) {
+	const errMessage = "could not get child groups"
+
+	var result []*Group
+	queryParams, err := GetQueryParams(params)
+	if err != nil {
+		return nil, errors.Wrap(err, errMessage)
+	}
+
+	resp, err := g.GetRequestWithBearerAuth(ctx, token).
+		SetResult(&result).
+		SetQueryParams(queryParams).
+		Get(g.getAdminRealmURL(realm, "organization", organizationID, "groups", groupID, "children"))
+
+	if err := checkForError(resp, err, errMessage); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+// GetGroupByPath get group with path in realm
+func (g *GoCloak) GetOrganizationGroupByPath(ctx context.Context, token, realm, organizationID, groupPath string) (*Group, error) {
+	const errMessage = "could not get group"
+
+	var result Group
+
+	resp, err := g.GetRequestWithBearerAuth(ctx, token).
+		SetResult(&result).
+		Get(g.getAdminRealmURL(realm, "organization", organizationID, "group-by-path", groupPath))
+
+	if err := checkForError(resp, err, errMessage); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+}
+
+// GetGroups get all groups in realm
+func (g *GoCloak) GetOrganizationGroups(ctx context.Context, token, realm, organizationID string, params GetGroupsParams) ([]*Group, error) {
+	const errMessage = "could not get groups"
+
+	var result []*Group
+	queryParams, err := GetQueryParams(params)
+	if err != nil {
+		return nil, errors.Wrap(err, errMessage)
+	}
+
+	resp, err := g.GetRequestWithBearerAuth(ctx, token).
+		SetResult(&result).
+		SetQueryParams(queryParams).
+		Get(g.getAdminRealmURL(realm, "organization", organizationID, "groups"))
+
+	if err := checkForError(resp, err, errMessage); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+// GetGroupMembers get a list of users of group with id in realm
+func (g *GoCloak) GetOrganizationGroupMembers(ctx context.Context, token, realm, organizationID, groupID string, params GetGroupsParams) ([]*User, error) {
+	const errMessage = "could not get group members"
+
+	var result []*User
+	queryParams, err := GetQueryParams(params)
+	if err != nil {
+		return nil, errors.Wrap(err, errMessage)
+	}
+
+	resp, err := g.GetRequestWithBearerAuth(ctx, token).
+		SetResult(&result).
+		SetQueryParams(queryParams).
+		Get(g.getAdminRealmURL(realm, "organization", organizationID, "groups", groupID, "members"))
+
+	if err := checkForError(resp, err, errMessage); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 // -----
 // Users
 // -----
